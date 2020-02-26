@@ -1,6 +1,7 @@
 import json
 import random
 import string
+from datetime import datetime
 """
     SAVE:
     with open('data.json', 'w') as fp:
@@ -9,14 +10,14 @@ import string
     with open('data.json', 'r') as fp:
         data = json.load(fp)
 """
-def getRandomString():
-    return ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
+
+with open('products.json', 'r') as fp:
+    prods = json.load(fp)
+
+for card in prods['vga']['RX 580 8GB']:
+    print(prods['vga']['RX 580 8GB'][card]['price'])
+    time = datetime.fromtimestamp(prods['vga']['RX 580 8GB'][card]['time'])
+    print(time)
 
 
-name = "Oi tudo bem como vai voce"
-words = ["Oi", "Bem", "Voce"]
 
-if(all(word.lower() in name.lower() for word in words)):
-    print("Sim")
-else:
-    print("Não")

@@ -7,10 +7,16 @@ import string
 def getRandomString():
     return ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
 
-def increasePage(link):
+def increasePageKabum(link):
     pos = link.find("pagina=")
     nextPage = int(link[pos + 7]) + 1
     newLink = link[:(pos + 7)] + str(nextPage) + link[(pos + 8):]
+    return newLink
+
+def increasePagePichau(link):
+    pos = link.find("p=")
+    nextPage = int(link[pos + 2]) + 1
+    newLink = link[:(pos + 2)] + str(nextPage) + link[(pos + 3):]
     return newLink
 
 def getPage(url):
@@ -27,7 +33,11 @@ def getPricesKabum(my_url):
     products = {}
     page_soup = getPage(my_url)
     cards = page_soup.findAll("div", {"style":"position:relative;"})
-    while(len(cards) > 0):
+    avaibleProd = False
+    while((len(cards) > 0) and avaibleProd):
+        ## essa flag fica em falso até que um produto disponivel seja encontrado na pagina
+        ## Se nenhum produto disponivel for encontrado em uma página, as proximas paginas não precisam ser verificadas.
+        avaibleProd = False
         for i in range(len(cards)):
             try:
                 ## Vê se o item está a venda pelo marketplace
@@ -35,6 +45,7 @@ def getPricesKabum(my_url):
                     ## Ver se o produto está disponivel
                     comprarImg = cards[i].findAll("div", {"style":"padding:0 0 5px 0;"})[0].a.img['src']
                     if(not ("comprar_off" in comprarImg)):
+                        avaibleProd = True ## um produto disponivel foi encontrado
                         productId = getRandomString()
                         while(productId in products):
                             productId = getRandomString()
@@ -51,7 +62,60 @@ def getPricesKabum(my_url):
                         products[productId]["link"] = link
             except:
                 print("Erro no item: " + str(i))
-        my_url = increasePage(my_url)
-        page_soup = getPage(my_url)
-        cards = page_soup.findAll("div", {"style":"position:relative;"})
+        ## Se nenhum produto disponivel for encontrado nesta página, as proximas nao precisam ser verificadas.
+        if(avaibleProd):
+            my_url = increasePageKabum(my_url)
+            page_soup = getPage(my_url)
+            cards = page_soup.findAll("div", {"style":"position:relative;"})
     return products
+
+def getPricesPichau(my_url):
+    products = {}
+    page_soup = getPage(my_url)
+    cards = page_soup.findAll("li", {"class":"item product product-item"})
+
+    avaibleProd = True
+    while((len(cards) > 0) and avaibleProd):
+        ## essa flag fica em falso até que um produto disponivel seja encontrado na pagina
+        ## Se nenhum produto disponivel for encontrado em uma página, as proximas paginas não precisam ser verificadas.
+        avaibleProd = False
+        for i in range(len(cards)):
+            try:
+                ## Ver se o produto está disponivel
+                submitButton = cards[30].findAll("button",{"type":"submit"})
+                if(len(submitButton) > 0):
+                    avaibleProd = True ## um produto disponivel foi encontrado
+                    productId = getRandomString()
+                    while(productId in products):
+                        productId = getRandomString()
+                    products[productId] = {}
+                    link = cards[i].findAll("a",{"class":"product-item-link"})[0]['href']
+                    name = cards[i].findAll("a",{"class":"product-item-link"})[0].text.strip()
+                    price12xStr = cards[i].findAll("span",{"class":"price"})[0].text[2:].replace(".", "")
+                    price12x = int(price12xStr[:(len(price12xStr) - 3)])
+                    priceStr = cards[i].findAll("span",{"class":"price-boleto"})[0].text.strip()
+                    priceStr = priceStr[10:(priceStr.find("no boleto") - 4)].replace(".", "")
+                    price = int(priceStr)
+                    products[productId]["name"] = name
+                    products[productId]["price"] = price
+                    products[productId]["price12x"] = price12x
+                    products[productId]["link"] = link
+            except:
+                print("Erro no item: " + str(i))
+        ## Se nenhum produto disponivel for encontrado nesta página, as proximas nao precisam ser verificadas.
+        if(avaibleProd and (len(cards) == 48)):
+            my_url = increasePagePichau(my_url)
+            page_soup = getPage(my_url)
+            cards = page_soup.findAll("li", {"class":"item product product-item"})
+        else:
+            cards = []
+    return products
+
+def getProductsFromWeb(url, store):
+    if(store == "kabum"):
+        prods = getPricesKabum(url)
+    elif(store == "pichau"):
+        prods = getPricesPichau(url)
+    else:
+        prods = {}
+    return prods

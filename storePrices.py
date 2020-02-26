@@ -1,5 +1,5 @@
 import getPrices
-from getPrices import getPricesKabum
+from getPrices import getProductsFromWeb
 from getPrices import getRandomString
 from datetime import datetime
 import json
@@ -8,6 +8,10 @@ urls = {
     "kabum":{
         "vga":['https://www.kabum.com.br/hardware/placa-de-video-vga?string=&pagina=1&ordem=5&limite=100'],
         "ram":['https://www.kabum.com.br/hardware/memoria-ram?ordem=5&limite=100&pagina=1&string=']
+    },
+    "pichau":{
+        "vga":["https://www.pichau.com.br/hardware/placa-de-video?p=1&product_list_limit=48"],
+        "ram":["https://www.pichau.com.br/hardware/memorias?p=1&product_list_limit=48"]
     }
 }
 
@@ -51,6 +55,8 @@ def createProductDict(classifiers, oldDict):
     return newDict
 
 def main():
+    now = datetime.now().timestamp()
+
     ## Carregando os classificadores
     with open('classifier.json', 'r') as fp:
         classifiers = json.load(fp)
@@ -62,10 +68,11 @@ def main():
     #print(items[min(items.keys(), key=(lambda k: items[k]['price']))])
     products = createProductDict(classifiers, products)
     for store in urls:
+        print(store)
         for prodType in urls[store]:
             for link in urls[store][prodType]:
-                print(link)
-                items = getPricesKabum(link)
+                #print(store)
+                items = getProductsFromWeb(link, store)
                 for key in items:
                     try:
                         productId = getRandomString()
@@ -74,7 +81,7 @@ def main():
                         models = getModels(classifiers[prodType], items[key]['name'])
                         for model in models:
                             products[prodType][model][productId] = items[key]
-                            products[prodType][model][productId]["time"] = datetime.now().timestamp()
+                            products[prodType][model][productId]["time"] = now
                             products[prodType][model][productId]["store"] = store
                     except:
                         print("Pequeno erro insignificante.")
