@@ -1,0 +1,183 @@
+{
+    "vga": {
+        "RX 570 4GB": {
+            "include": ["RX 570", "4G"],
+            "exclude": ["RX 5700"]
+        },
+        "RX 570 8GB": {
+            "include": ["RX 570", "8G"],
+            "exclude": ["RX 5700"]
+        },
+        "RTX 2060 6GB": {
+            "include": ["RTX 2060", "6G"],
+            "exclude": []
+        },
+        "RTX 2060 8GB": {
+            "include": ["RTX 2060", "8G"],
+            "exclude": []
+        },
+        "RTX 2070 8GB": {
+            "include": ["RTX 2070", "8G"],
+            "exclude": []
+        },
+        "GTX 1660 6GB": {
+            "include": ["GTX 1660", "6G"],
+            "exclude": ["GTX 1660 Ti"]
+        },
+        "GTX 1660 Ti 6GB": {
+            "include": ["GTX 1660 Ti", "6G"],
+            "exclude": []
+        },
+        "RX 5700 8GB": {
+            "include": ["RX 5700", "8G"],
+            "exclude": []
+        },
+        "RX 5500 8GB":{
+            "include": ["RX 5500","8G"],
+            "exclude": []
+        },
+        "RX 550 4GB":{
+            "include": ["RX 550","4G"],
+            "exclude": []
+        },
+        "RX 550 2GB":{
+            "include": ["RX 550","2G"],
+            "exclude": []
+        },
+        "RTX 2080 8GB":{
+            "include": ["RTX 2080","8G"],
+            "exclude": []
+        },
+        "RTX 2080 Ti 11GB":{
+            "include": ["RTX 2080 Ti","11G"],
+            "exclude": []
+        },
+        "GTX 1650 4GB":{
+            "include": ["GTX 1650", "4G"],
+            "exclude": []
+        },
+        "GTX 1050 Ti 4GB":{
+            "include": ["GTX 1050 Ti", "4G"],
+            "exclude": []
+        },
+        "GTX 1050 2GB":{
+            "include": ["GTX 1050", "2G"],
+            "exclude": ["GTX 1050 Ti"]
+        },
+        "GTX 1050 4GB":{
+            "include": ["GTX 1050", "4G"],
+            "exclude": ["GTX 1050 Ti"]
+        },
+        "GT 1030 2GB" : {
+            "include": ["GT 1030", "2G"],
+            "exclude": []
+        },
+        "RX 580 8GB":{
+            "include": ["RX 580", "8G"],
+            "exclude": []
+        },
+        "RX 580 4GB":{
+            "include": ["RX 580", "4G"],
+            "exclude": []
+        },
+        "RX 560 4GB":{
+            "include": ["RX 560", "4G"],
+            "exclude": []
+        },
+        "RX 590 8GB":{
+            "include": ["RX 590", "8G"],
+            "exclude": []
+        },
+        "GTX 1060 3GB":{
+            "include": ["GTX 1060", "3G"],
+            "exclude":[]
+        }
+    },
+    "ram": {
+        "4GB DDR3 1333MHz":{
+            "include":["4GB", "DDR3", "1333MHz"],
+            "exclude":["2x2GB", "2x4GB", "4x4GB"]
+        },
+        "4GB DDR3 1600MHz":{
+            "include":["4GB", "DDR3", "1600MHz"],
+            "exclude":["2x2GB", "2x4GB", "4x4GB"]
+        },
+        "4GB DDR3 1866MHz":{
+            "include":["4GB", "DDR3", "1866MHz"],
+            "exclude":["2x2GB", "2x4GB", "4x4GB"]
+        },
+        "8GB DDR3 1333MHz":{
+            "include":["8GB", "DDR3", "1333MHz"],
+            "exclude":["2x4GB", "2x8GB", "4x8GB"]
+        },
+        "8GB DDR3 1600MHz":{
+            "include":["8GB", "DDR3", "1600MHz"],
+            "exclude":["2x4GB", "2x8GB", "4x8GB"]
+        },
+        "8GB DDR3 1866MHz":{
+            "include":["8GB", "DDR3", "1866MHz"],
+            "exclude":["2x4GB", "2x8GB", "4x8GB"]
+        },
+        "4GB DDR4 2400MHz":{
+            "include":["4GB", "DDR4", "2400MHz"],
+            "exclude":["2x2GB", "2x4GB", "4x4GB"]
+        },
+        "4GB DDR4 2666MHz":{
+            "include":["4GB", "DDR4", "2666MHz"],
+            "exclude":["2x2GB", "2x4GB", "4x4GB"]
+        },
+        "4GB DDR4 3000MHz":{
+            "include":["4GB", "DDR4", "3000MHz"],
+            "exclude":["2x2GB", "2x4GB", "4x4GB"]
+        },
+        "8GB DDR4 2400MHz":{
+            "include":["8GB", "DDR4", "2400MHz"],
+            "exclude":["2x4GB", "2x8GB", "4x8GB"]
+        },
+        "8GB DDR4 2666MHz":{
+            "include":["8GB", "DDR4", "2666MHz"],
+            "exclude":["2x4GB", "2x8GB", "4x8GB"]
+        },
+        "8GB DDR4 3000MHz":{
+            "include":["8GB", "DDR4", "3000MHz"],
+            "exclude":["2x4GB", "2x8GB", "4x8GB"]
+        },
+        "8GB DDR4 3200MHz":{
+            "include":["8GB", "DDR4", "3200MHz"],
+            "exclude":["2x4GB", "2x8GB", "4x8GB"]
+        },
+        "16GB DDR4 2400MHz":{
+            "include":["16GB", "DDR4", "2400MHz"],
+            "exclude":["2x8GB", "2x16GB", "4x16GB"]
+        },
+        "16GB DDR4 2666MHz":{
+            "include":["16GB", "DDR4", "2666MHz"],
+            "exclude":["2x8GB", "2x16GB", "4x16GB"]
+        },
+        "16GB DDR4 3000MHz":{
+            "include":["16GB", "DDR4", "3000MHz"],
+            "exclude":["2x8GB", "2x16GB", "4x16GB"]
+        },
+        "16GB DDR4 3200MHz":{
+            "include":["16GB", "DDR4", "3200MHz"],
+            "exclude":["2x8GB", "2x16GB", "4x16GB"]
+        },
+        "32GB DDR4 2400MHz":{
+            "include":["32GB", "DDR4", "2400MHz"],
+            "exclude":["2x16GB", "2x32GB", "4x32GB"]
+        },
+        "32GB DDR4 2666MHz":{
+            "include":["32GB", "DDR4", "2666MHz"],
+            "exclude":["2x16GB", "2x32GB", "4x32GB"]
+        },
+        "32GB DDR4 3000MHz":{
+            "include":["32GB", "DDR4", "3000MHz"],
+            "exclude":["2x16GB", "2x32GB", "4x32GB"]
+        },
+        "32GB DDR4 3200MHz":{
+            "include":["32GB", "DDR4", "3200MHz"],
+            "exclude":["2x16GB", "2x32GB", "4x32GB"]
+        }
+
+    }
+}
