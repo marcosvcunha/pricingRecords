@@ -1,11 +1,9 @@
 import bs4
 from urllib.request import urlopen as uReq
 from bs4 import BeautifulSoup as soup
-import random
-import string
-
-def getRandomString():
-    return ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
+import json
+from datetime import datetime
+from utils import *
 
 def increasePageKabum(link):
     pos = link.find("pagina=")
@@ -18,6 +16,18 @@ def increasePagePichau(link):
     nextPage = int(link[pos + 2]) + 1
     newLink = link[:(pos + 2)] + str(nextPage) + link[(pos + 3):]
     return newLink
+
+def createProductDict(classifiers):
+    newDict = {}
+    for prodType in classifiers:
+        if(not (prodType in newDict)):
+            newDict[prodType] = {}
+        for model in classifiers[prodType]:
+            if(not (model in newDict[prodType])):
+                newDict[prodType][model] = {}
+        if(not("desconhecido" in newDict[prodType])):
+            newDict[prodType]["desconhecido"] = {}
+    return newDict
 
 def getPage(url):
     uClient = uReq(url)
@@ -33,7 +43,7 @@ def getPricesKabum(my_url):
     products = {}
     page_soup = getPage(my_url)
     cards = page_soup.findAll("div", {"style":"position:relative;"})
-    avaibleProd = False
+    avaibleProd = True
     while((len(cards) > 0) and avaibleProd):
         ## essa flag fica em falso até que um produto disponivel seja encontrado na pagina
         ## Se nenhum produto disponivel for encontrado em uma página, as proximas paginas não precisam ser verificadas.
@@ -111,7 +121,7 @@ def getPricesPichau(my_url):
             cards = []
     return products
 
-def getProductsFromWeb(url, store):
+def getProductsFromPage(url, store):
     if(store == "kabum"):
         prods = getPricesKabum(url)
     elif(store == "pichau"):
@@ -119,3 +129,30 @@ def getProductsFromWeb(url, store):
     else:
         prods = {}
     return prods
+
+def getProductsFromWeb(urls):
+    now = datetime.now().timestamp()
+    ## Carregando os classificadores
+    classifiers = readJson("classifier.json")
+
+    products = createProductDict(classifiers)
+    for store in urls:
+        for prodType in urls[store]:
+            for link in urls[store][prodType]:
+                items = getProductsFromPage(link, store)
+                for key in items:
+                    try:
+                        models = getModels(classifiers[prodType], items[key]['name'])
+                        for model in models:
+                            productId = getRandomString()
+                            if(model in products[prodType]):
+                                while(productId in products[prodType][model]):
+                                    productId = getRandomString()
+                            products[prodType][model][productId] = items[key]
+                            products[prodType][model][productId]["time"] = now
+                            products[prodType][model][productId]["store"] = store
+                    except:
+                        #print("Pequeno erro insignificante.")
+                        pass
+
+    return products
