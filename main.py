@@ -2,8 +2,7 @@ import getPrices
 from getPrices import getProductsFromWeb as getProds
 from utils import *
 from datetime import datetime
-import json
-from database import saveInJson
+from database import *
 
 urls = {
     "kabum":{
@@ -51,8 +50,24 @@ def main():
     #    products = json.load(fp)
 
     #print(items[min(items.keys(), key=(lambda k: items[k]['price']))])
+    startTime = datetime.now().timestamp()
     products = getProds(urls)
+    endTime = datetime.now().timestamp()
+    getProdsTime = endTime - startTime
+    startTime = datetime.now().timestamp()
     saveInJson(products)
+    endTime = datetime.now().timestamp()
+    saveInJsonTime = endTime - startTime
+    startTime = datetime.now().timestamp()
+    saveSqlite(products)
+    endTime = datetime.now().timestamp()
+    saveSqliteTime = endTime - startTime
+
+    print("Captura dos preços completa!")
+    print("Tempo decorrido: " + str(getProdsTime + saveInJsonTime + saveSqliteTime))
+    print("Tempo para obter os dados: " + str(getProdsTime))
+    print("Tempo salvar em Json: " + str(saveInJsonTime))
+    print("Tempo para salvar em Sqlite: " + str(saveSqliteTime))
 
     #with open('products.json', 'w') as fp:
     #    json.dump(products, fp)
