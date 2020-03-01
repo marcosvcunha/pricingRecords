@@ -30,20 +30,31 @@ def createProductDict(classifiers):
     return newDict
 
 def getPage(url):
-    uClient = uReq(url)
+
+    uClient = uReq(url, timeout=10)
     page_html = uClient.read()
     uClient.close()
-
     page_soup = soup(page_html, "html.parser")
 
     ## Pega todas os cards
     return page_soup
 
 def getPricesKabum(my_url):
-    products = {}
-    page_soup = getPage(my_url)
+    products = []
+
+    startTime = datetime.now().timestamp()
+    try:
+        page_soup = getPage(my_url)
+    except:
+        print("Erro ao baixar a página.")
+        return products
+    endTime = datetime.now().timestamp()
+    totalTime = endTime - startTime
+    print("Tempo decorrido recebendo a página: " + str(totalTime))
+
     cards = page_soup.findAll("div", {"style":"position:relative;"})
     avaibleProd = True
+    startTime = datetime.now().timestamp()
     while((len(cards) > 0) and avaibleProd):
         ## essa flag fica em falso até que um produto disponivel seja encontrado na pagina
         ## Se nenhum produto disponivel for encontrado em uma página, as proximas paginas não precisam ser verificadas.
@@ -56,35 +67,45 @@ def getPricesKabum(my_url):
                     comprarImg = cards[i].findAll("div", {"style":"padding:0 0 5px 0;"})[0].a.img['src']
                     if(not ("comprar_off" in comprarImg)):
                         avaibleProd = True ## um produto disponivel foi encontrado
-                        productId = getRandomString()
-                        while(productId in products):
-                            productId = getRandomString()
-                        products[productId] = {}
                         link = cards[i].findAll("div",{"class":"listagem-titulo_descr"})[0].h2.a["href"]
                         name = cards[i].section.div.div.a.img["title"]
                         price12xStr = cards[i].findAll("div", {"class":"listagem-precoavista"})[0].text[3:].replace(".", "")
                         price12x = int(price12xStr[:(len(price12xStr) - 3)])
                         priceStr = cards[i].findAll("div", {"class":"listagem-preco"})[0].text[3:].replace(".", "")
                         price = int(priceStr[:(len(priceStr) - 3)])
-                        products[productId]["name"] = name
-                        products[productId]["price"] = price
-                        products[productId]["price12x"] = price12x
-                        products[productId]["link"] = link
+                        prodDict = {"name":name, "price":price, "price12x":price12x, "link":link}
+                        products.append(prodDict)
             except:
                 print("Erro no item: " + str(i))
         ## Se nenhum produto disponivel for encontrado nesta página, as proximas nao precisam ser verificadas.
         if(avaibleProd):
             my_url = increasePageKabum(my_url)
-            page_soup = getPage(my_url)
+            try:
+                page_soup = getPage(my_url)
+            except:
+                print("Erro ao baixar a página.")
+                return products
             cards = page_soup.findAll("div", {"style":"position:relative;"})
+    endTime = datetime.now().timestamp()
+    totalTime = endTime - startTime
+    print("Tempo decorrido fazendo scrap: " + str(totalTime))
     return products
 
 def getPricesPichau(my_url):
-    products = {}
-    page_soup = getPage(my_url)
+    products = []
+    startTime = datetime.now().timestamp()
+    try:
+        page_soup = getPage(my_url)
+    except:
+        print("Erro ao baixar a página.")
+        return products
+    endTime = datetime.now().timestamp()
+    totalTime = endTime - startTime
+    print("Tempo decorrido recebendo a página: " + str(totalTime))
     cards = page_soup.findAll("li", {"class":"item product product-item"})
 
     avaibleProd = True
+    startTime = datetime.now().timestamp()
     while((len(cards) > 0) and avaibleProd):
         ## essa flag fica em falso até que um produto disponivel seja encontrado na pagina
         ## Se nenhum produto disponivel for encontrado em uma página, as proximas paginas não precisam ser verificadas.
@@ -95,10 +116,6 @@ def getPricesPichau(my_url):
                 submitButton = cards[30].findAll("button",{"type":"submit"})
                 if(len(submitButton) > 0):
                     avaibleProd = True ## um produto disponivel foi encontrado
-                    productId = getRandomString()
-                    while(productId in products):
-                        productId = getRandomString()
-                    products[productId] = {}
                     link = cards[i].findAll("a",{"class":"product-item-link"})[0]['href']
                     name = cards[i].findAll("a",{"class":"product-item-link"})[0].text.strip()
                     price12xStr = cards[i].findAll("span",{"class":"price"})[0].text[2:].replace(".", "")
@@ -106,19 +123,24 @@ def getPricesPichau(my_url):
                     priceStr = cards[i].findAll("span",{"class":"price-boleto"})[0].text.strip()
                     priceStr = priceStr[10:(priceStr.find("no boleto") - 4)].replace(".", "")
                     price = int(priceStr)
-                    products[productId]["name"] = name
-                    products[productId]["price"] = price
-                    products[productId]["price12x"] = price12x
-                    products[productId]["link"] = link
+                    prodDict = {"name":name, "price":price, "price12x":price12x, "link":link}
+                    products.append(prodDict)
             except:
                 print("Erro no item: " + str(i))
         ## Se nenhum produto disponivel for encontrado nesta página, as proximas nao precisam ser verificadas.
         if(avaibleProd and (len(cards) == 48)):
             my_url = increasePagePichau(my_url)
-            page_soup = getPage(my_url)
+            try:
+                page_soup = getPage(my_url)
+            except:
+                print("Erro ao baixar a página.")
+                return products
             cards = page_soup.findAll("li", {"class":"item product product-item"})
         else:
             cards = []
+    endTime = datetime.now().timestamp()
+    totalTime = endTime - startTime
+    print("Tempo decorrido fazendo scrap: " + str(totalTime))
     return products
 
 def getProductsFromPage(url, store):
@@ -134,25 +156,25 @@ def getProductsFromWeb(urls):
     now = datetime.now().timestamp()
     ## Carregando os classificadores
     classifiers = readJson("classifier.json")
-
-    products = createProductDict(classifiers)
+    print("Começando a pegar os produtos.")
+    products = []
     for store in urls:
+        print("Pegando os produtos de: " + store)
         for prodType in urls[store]:
             for link in urls[store][prodType]:
                 items = getProductsFromPage(link, store)
-                for key in items:
+                for item in items:
                     try:
-                        models = getModels(classifiers[prodType], items[key]['name'])
-                        for model in models:
-                            productId = getRandomString()
-                            if(model in products[prodType]):
-                                while(productId in products[prodType][model]):
-                                    productId = getRandomString()
-                            products[prodType][model][productId] = items[key]
-                            products[prodType][model][productId]["time"] = now
-                            products[prodType][model][productId]["store"] = store
+                        if(prodType in classifiers):
+                            models = getModels(classifiers[prodType], item['name'])
+                        else:
+                            models = ["desconhecido"]
+                        item["time"] = now
+                        item["store"] = store
+                        item["model"] = models[0] ## Por hora fica apenas com o primeiro modelo encontrado
+                        item["prodType"] = prodType
                     except:
-                        #print("Pequeno erro insignificante.")
+                        print("Pequeno erro insignificante.")
                         pass
-
+                products += items
     return products

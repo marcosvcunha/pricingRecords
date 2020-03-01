@@ -29,10 +29,7 @@ def saveSqlite(data):
             store TEXT, prodType TEXT, model TEXT);
         """)
         productsList = []
-        for prodType in data:
-            for model in data[prodType]:
-                for productId in data[prodType][model]:
-                    item = data[prodType][model][productId]
-                    productsList.append((item['name'], item['price'], item['price12x'], item['link'], item['time'],
-                        item['store'], prodType, model))
+        for item in data:
+            productsList.append((item['name'], item['price'], item['price12x'], item['link'], item['time'],
+                item['store'], item["prodType"], item["model"]))
         cur.executemany("INSERT INTO products VALUES(?,?,?,?,?,?,?,?)", productsList)
