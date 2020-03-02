@@ -1,9 +1,11 @@
 import bs4
 from urllib.request import urlopen as uReq
+from urllib.request import Request
 from bs4 import BeautifulSoup as soup
 import json
 from datetime import datetime
 from utils import *
+import re
 
 def increasePageKabum(link):
     pos = link.find("pagina=")
@@ -30,8 +32,9 @@ def createProductDict(classifiers):
     return newDict
 
 def getPage(url):
-
-    uClient = uReq(url, timeout=10)
+    hdr = {'User-Agent':'Mozilla/5.0'}
+    req = Request(url,headers=hdr)
+    uClient = uReq(req, timeout=10)
     page_html = uClient.read()
     uClient.close()
     page_soup = soup(page_html, "html.parser")
@@ -42,19 +45,14 @@ def getPage(url):
 def getPricesKabum(my_url):
     products = []
 
-    startTime = datetime.now().timestamp()
     try:
         page_soup = getPage(my_url)
     except:
         print("Erro ao baixar a página.")
         return products
-    endTime = datetime.now().timestamp()
-    totalTime = endTime - startTime
-    print("Tempo decorrido recebendo a página: " + str(totalTime))
 
     cards = page_soup.findAll("div", {"style":"position:relative;"})
     avaibleProd = True
-    startTime = datetime.now().timestamp()
     while((len(cards) > 0) and avaibleProd):
         ## essa flag fica em falso até que um produto disponivel seja encontrado na pagina
         ## Se nenhum produto disponivel for encontrado em uma página, as proximas paginas não precisam ser verificadas.
@@ -93,26 +91,19 @@ def getPricesKabum(my_url):
                 print("Erro ao baixar a página.")
                 return products
             cards = page_soup.findAll("div", {"style":"position:relative;"})
-    endTime = datetime.now().timestamp()
-    totalTime = endTime - startTime
-    print("Tempo decorrido fazendo scrap: " + str(totalTime))
     return products
 
 def getPricesPichau(my_url):
     products = []
-    startTime = datetime.now().timestamp()
     try:
         page_soup = getPage(my_url)
     except:
         print("Erro ao baixar a página.")
         return products
-    endTime = datetime.now().timestamp()
-    totalTime = endTime - startTime
-    print("Tempo decorrido recebendo a página: " + str(totalTime))
+    
     cards = page_soup.findAll("li", {"class":"item product product-item"})
 
     avaibleProd = True
-    startTime = datetime.now().timestamp()
     while((len(cards) > 0) and avaibleProd):
         ## essa flag fica em falso até que um produto disponivel seja encontrado na pagina
         ## Se nenhum produto disponivel for encontrado em uma página, as proximas paginas não precisam ser verificadas.
@@ -145,20 +136,54 @@ def getPricesPichau(my_url):
             cards = page_soup.findAll("li", {"class":"item product product-item"})
         else:
             cards = []
-    endTime = datetime.now().timestamp()
-    totalTime = endTime - startTime
-    print("Tempo decorrido fazendo scrap: " + str(totalTime))
     return products
+
+def getPricesTerabyte(my_url):
+    products = []
+
+    try:
+        page_soup = getPage(my_url)
+    except:
+        print("Erro ao baixar a página.")
+        return products
+
+    cards = page_soup.findAll("div",{"class":"pbox col-xs-12 col-sm-6 col-md-3"})
+    for i in range(len(cards)):
+        try:
+            ## Ver se o produto está disponivel
+            submitButton = cards[i].findAll("button",{"type":"button"})
+            if(len(submitButton) > 0):
+                link = "https://www.terabyteshop.com.br" + cards[i].findAll("a",{"class":"prod-name"})[0]['href']
+                name = cards[i].findAll("a",{"class":"prod-name"})[0].text
+                price12xStr = cards[i].findAll("div",{"class":"prod-juros"})[0].text
+                price12xStr = price12xStr[price12xStr.find("R$"):]
+                price12xStr = re.sub('[^0-9]','', price12xStr)
+                price12xStr = price12xStr[:(len(price12xStr) - 2)]
+                price12x = int(price12xStr) * 12
+                priceStr = cards[i].findAll("div",{"class":"prod-new-price"})[0].text
+                priceStr = re.sub('[^0-9]','', priceStr)
+                price = int(priceStr[:(len(priceStr) - 2)])
+                prodDict = {"name":name, "price":price, "price12x":price12x, "link":link}
+                products.append(prodDict)
+        except:
+            print("Erro no item: " + str(i))
+    return products
+
 
 def getProductsFromPage(url, store):
     if(store == "kabum"):
         prods = getPricesKabum(url)
     elif(store == "pichau"):
         prods = getPricesPichau(url)
+    elif(store == "terabyte"):
+        prods = getPricesTerabyte(url)
     else:
         prods = {}
     return prods
 
+"""
+    Retorna todos o produtos como uma lista de dicionarios.
+"""
 def getProductsFromWeb(urls):
     now = datetime.now().timestamp()
     ## Carregando os classificadores
@@ -169,7 +194,6 @@ def getProductsFromWeb(urls):
         print("Pegando os produtos de: " + store)
         for prodType in urls[store]:
             for link in urls[store][prodType]:
-                print(link)
                 items = getProductsFromPage(link, store)
                 for item in items:
                     try:
