@@ -25,8 +25,8 @@ urls = {
 }
 
 test_urls = {
-    "kabum":{
-        "vga":['https://www.kabum.com.br/hardware/placa-de-video-vga?string=&pagina=1&ordem=5&limite=100']
+    "pichau":{
+        "vga":["https://www.pichau.com.br/hardware/placa-de-video?p=1&product_list_limit=48"]
     }
 }
 
@@ -54,7 +54,7 @@ def main():
     products = getProds(urls)
     endTime = datetime.now().timestamp()
     getProdsTime = endTime - startTime
-
+"""
     startTime = datetime.now().timestamp()
     saveSqlite(products)
     endTime = datetime.now().timestamp()
@@ -64,7 +64,7 @@ def main():
     print("Tempo decorrido: " + str(getProdsTime + saveSqliteTime))
     print("Tempo para obter os dados: " + str(getProdsTime))
     print("Tempo para salvar em Sqlite: " + str(saveSqliteTime))
-
+"""
 
 if __name__ == '__main__':
     main()

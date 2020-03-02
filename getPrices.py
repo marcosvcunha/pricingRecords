@@ -71,8 +71,15 @@ def getPricesKabum(my_url):
                         name = cards[i].section.div.div.a.img["title"]
                         price12xStr = cards[i].findAll("div", {"class":"listagem-precoavista"})[0].text[3:].replace(".", "")
                         price12x = int(price12xStr[:(len(price12xStr) - 3)])
-                        priceStr = cards[i].findAll("div", {"class":"listagem-preco"})[0].text[3:].replace(".", "")
-                        price = int(priceStr[:(len(priceStr) - 3)])
+                        priceStr = cards[i].findAll("div", {"class":"listagem-preco"})
+
+                        ## Caso nao haja desconto na compra a vista: price = price12x
+                        if(len(priceStr) > 0):
+                            priceStr = priceStr[0].text[3:].replace(".", "")
+                            price = int(priceStr[:(len(priceStr) - 3)])
+                        else:
+                            price = price12x
+
                         prodDict = {"name":name, "price":price, "price12x":price12x, "link":link}
                         products.append(prodDict)
             except:
@@ -113,7 +120,7 @@ def getPricesPichau(my_url):
         for i in range(len(cards)):
             try:
                 ## Ver se o produto está disponivel
-                submitButton = cards[30].findAll("button",{"type":"submit"})
+                submitButton = cards[i].findAll("button",{"type":"submit"})
                 if(len(submitButton) > 0):
                     avaibleProd = True ## um produto disponivel foi encontrado
                     link = cards[i].findAll("a",{"class":"product-item-link"})[0]['href']
@@ -162,6 +169,7 @@ def getProductsFromWeb(urls):
         print("Pegando os produtos de: " + store)
         for prodType in urls[store]:
             for link in urls[store][prodType]:
+                print(link)
                 items = getProductsFromPage(link, store)
                 for item in items:
                     try:
