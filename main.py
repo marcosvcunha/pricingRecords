@@ -84,14 +84,14 @@ test_urls = {
 """
 
 def main():
-
+    now = datetime.now().timestamp()
     startTime = datetime.now().timestamp()
-    products = getProds(urls)
+    data = getProds(urls)
     endTime = datetime.now().timestamp()
     getProdsTime = endTime - startTime
 
     startTime = datetime.now().timestamp()
-    saveSqlite(products)
+    saveSqlite(data)
     endTime = datetime.now().timestamp()
     saveSqliteTime = endTime - startTime
 
@@ -99,7 +99,6 @@ def main():
     print("Tempo decorrido: " + str(getProdsTime + saveSqliteTime))
     print("Tempo para obter os dados: " + str(getProdsTime))
     print("Tempo para salvar em Sqlite: " + str(saveSqliteTime))
-
 
 if __name__ == '__main__':
     main()

@@ -201,12 +201,12 @@ def getProductsFromWeb(urls):
                             models = getModels(classifiers[prodType], item['name'])
                         else:
                             models = ["desconhecido"]
-                        item["time"] = now
                         item["store"] = store
                         item["model"] = models[0] ## Por hora fica apenas com o primeiro modelo encontrado
                         item["prodType"] = prodType
+                        item["time"] = now
                     except:
                         print("Pequeno erro insignificante.")
                         pass
                 products += items
-    return products
+    return {"products": products, "readTime":now}

@@ -21,7 +21,7 @@ def saveInJson(data):
 
 def saveSqlite(data):
     con = lite.connect("priceMonitor.db")
-
+    products = data["products"]
     with con:
         cur = con.cursor()
         cur.executescript(""" 
@@ -29,7 +29,12 @@ def saveSqlite(data):
             store TEXT, prodType TEXT, model TEXT);
         """)
         productsList = []
-        for item in data:
+        for item in products:
             productsList.append((item['name'], item['price'], item['price12x'], item['link'], item['time'],
                 item['store'], item["prodType"], item["model"]))
         cur.executemany("INSERT INTO products VALUES(?,?,?,?,?,?,?,?)", productsList)
+        ## Salva o momento da leitura na tabela reads:
+        cur.executescript(""" 
+            CREATE TABLE IF NOT EXISTS reads(id INTEGER PRIMARY KEY, time TIMESTAMP);
+        """)
+        cur.execute("INSERT INTO reads(time) VALUES({})".format(data["readTime"]))
