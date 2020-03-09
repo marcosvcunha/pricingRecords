@@ -29,3 +29,4 @@ def getLastRead():
         cur.execute("SELECT time FROM reads ORDER BY id DESC LIMIT 1;")
         rows = cur.fetchall()
     return rows[0]['time']
+

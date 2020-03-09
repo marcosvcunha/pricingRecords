@@ -187,7 +187,6 @@ def getProductsFromPage(url, store):
 def getProductsFromWeb(urls):
     now = datetime.now().timestamp()
     ## Carregando os classificadores
-    classifiers = readJson("classifier.json")
     print("Começando a pegar os produtos.")
     products = []
     for store in urls:
@@ -197,12 +196,7 @@ def getProductsFromWeb(urls):
                 items = getProductsFromPage(link, store)
                 for item in items:
                     try:
-                        if(prodType in classifiers):
-                            models = getModels(classifiers[prodType], item['name'])
-                        else:
-                            models = ["desconhecido"]
                         item["store"] = store
-                        item["model"] = models[0] ## Por hora fica apenas com o primeiro modelo encontrado
                         item["prodType"] = prodType
                         item["time"] = now
                     except:
