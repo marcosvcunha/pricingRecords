@@ -210,4 +210,34 @@ def getCheapestsProductEachDay(nameLike, nameNotLike=None, prodType=None, startT
             for i in range(len(rows)):
                 data['prices'].append(rows[i][0])
                 data['times'].append(day)
-    return data 
+    return data
+
+"""
+    Report Subscription
+    id  | username | email    | prodNames       | prodTypes   | period (days) | sastReport |
+    int | Text     | Text     | [n1, n2, ...]   | [t1, t2...] | int           | timestamp  |
+"""
+def insertSub(username, email, prodNames, prodTypes, period):
+    con = lite.connect("priceMonitor.db")
+    with con:
+        cur = con.cursor()
+        cur.execute("""CREATE TABLE IF NOT EXISTS reportSubs(id INTEGER PRIMARY KEY, username TEXT, email TEXT, 
+            prodNames TEXT, prodTypes TEXT, period INT, lastReport timestamp);""")
+        cur.execute("""INSERT INTO reportSubs(username, email, prodNames, prodTypes, period, lastReport) 
+            VALUES(?,?,?,?,?,?)""", (username, email, repr(prodNames), repr(prodTypes), period, float(0)))
+
+def getAllReportSubs():
+    con = lite.connect("priceMonitor.db")
+    subs = []
+    
+    if(tableExists('reportSubs')):
+        with con:
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM reportSubs;")
+            rows = cur.fetchall()
+            for row in rows:
+                subs.append({'username':row['username'], 'email':row['email'], 'prodNames':eval(row['prodNames']),
+                    'prodTypes':eval(row['prodTypes']), 'period':row['period'], 'lastReport':row['lastReport']})
+    
+    return subs

@@ -115,3 +115,5 @@ sqlite.py
 data.json
 teste.py
 sqltest.py
+*.png
+*.json

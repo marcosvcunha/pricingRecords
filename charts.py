@@ -7,6 +7,8 @@ import os
 from database import *
 
 
+
+
 ## Copia o DB real para a este diretorio
 def updateDb():
     os.system("cp 'C:\Program Files (x86)\PriceMonitor\priceMonitor.db' priceMonitor.db")
