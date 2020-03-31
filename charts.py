@@ -1,12 +1,16 @@
+from datetime import datetime
+
+startTime = datetime.now().timestamp()
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib
 import numpy as np
-import pandas as pd
+#import pandas as pd
 import os
-from database import *
-
-
+from database import getCheapestsProductEachDay
+endTime = datetime.now().timestamp()
+totalTime = endTime - startTime
+print("Tempo para realizar os imports: " + str(totalTime))
 
 
 ## Copia o DB real para a este diretorio
@@ -29,8 +33,6 @@ def plotCheapestProducts(prodName):
     plt.show()
 
 def main():
-    updateDb()
-    plotCheapestProducts("hyperx 8gb 2400mhz")
-
+    pass
 if __name__ == "__main__":
     main()

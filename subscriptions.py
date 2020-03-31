@@ -1,11 +1,13 @@
+from datetime import datetime
 import database as db
 from datetime import datetime
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib
 import numpy as np
-import os
+from os import system
 import ezgmail
+
 
 """
     Report Subscription
@@ -60,18 +62,24 @@ def checkSubs():
     subs = db.getAllReportSubs()
     secondsInADay = 86400
     for sub in subs:
-        if(sub['lastReport'] + sub['period'] * 60 < now):
+        if(sub['lastReport'] + sub['period'] * secondsInADay < now):
             ## Fazer Report
             for i in range(len(sub['prodNames'])):
                 ## tem apenas o produto mais barato de cada dia.
                 singleProd = db.getCheapestsProductEachDay(sub['prodNames'][i], prodType=sub['prodTypes'][i], 
-                    startTime=(now - secondsInADay*sub['period']), endTime=now, countPerDay=1)
+                    startTime=(now - secondsInADay*30), endTime=now, countPerDay=1)
                 ## Tem os 3 produtos mais baratos de cada dia
                 threeProds = db.getCheapestsProductEachDay(sub['prodNames'][i], prodType=sub['prodTypes'][i], 
-                    startTime=(now - secondsInADay*sub['period']), endTime=now, countPerDay=3)
+                    startTime=(now - secondsInADay*30), endTime=now, countPerDay=3)
                 threeProdsAvg = _getAvarageForEachDay(threeProds)
                 plotProducts(singleProd, threeProdsAvg, sub['prodNames'][i].upper())
             sendPlotsByEmail(sub)
+            deletePlots(sub['prodNames'])
+            db.updateReportSub(sub['username'], datetime.now().timestamp())
+
+def deletePlots(names):
+    for name in names:
+        system("rm " + name.replace(" ", "").upper() + ".png")
 
 def plotProducts(singleProd, threeProdsAvg, title):
     dateTimes = []
@@ -83,7 +91,6 @@ def plotProducts(singleProd, threeProdsAvg, title):
     for value in threeProdsAvg['times']:
         dateTimes.append(datetime.fromtimestamp(value))
     dates2 = matplotlib.dates.date2num(dateTimes)
-    #plt.scatter(dates, values['prices'])
     
     plt.plot(dates1, singleProd['prices'], marker='o', color='b', label='Produto mais Barato do dia')
     plt.plot(dates2, threeProdsAvg['prices'], marker='X', color='r', label='Média dos três produtos mais baratos')
@@ -106,10 +113,12 @@ def sendPlotsByEmail(subReport):
     ezgmail.init()
     ezgmail.send(subReport['email'], 'PriceMonitor Relatorio', 'Olá {}, segue por anexo seu relatório do PriceMonitor.'
         .format(subReport['username']), fileNames)
+    print("Email enviado!")
 
 
 def main():
     checkSubs()
+    return
 
 if __name__ == "__main__":
     main()

@@ -238,6 +238,12 @@ def getAllReportSubs():
             rows = cur.fetchall()
             for row in rows:
                 subs.append({'username':row['username'], 'email':row['email'], 'prodNames':eval(row['prodNames']),
-                    'prodTypes':eval(row['prodTypes']), 'period':row['period'], 'lastReport':row['lastReport']})
-    
+                    'prodTypes':eval(row['prodTypes']), 'period':row['period'], 'lastReport':row['lastReport']})    
     return subs
+
+def updateReportSub(username, lastReport):
+    con = lite.connect("priceMonitor.db")
+    with con:
+        cur = con.cursor()
+        cur.execute("UPDATE reportSubs SET lastReport = {} WHERE username = '{}';".format(lastReport, username))
+    return

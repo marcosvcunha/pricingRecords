@@ -3,6 +3,7 @@ from getPrices import getProductsFromWeb as getProds
 from utils import *
 from datetime import datetime
 from database import *
+from subscriptions import checkSubs
 import time
 
 test_urls = {
@@ -52,6 +53,8 @@ def main():
             print("Tempo decorrido: " + str(getProdsTime + saveSqliteTime))
             print("Tempo para obter os dados: " + str(getProdsTime))
             print("Tempo para salvar em Sqlite: " + str(saveSqliteTime))
+
+            checkSubs()
         else:
             print("Going to sleep")
             nextRead = lastRead + 3600*8
