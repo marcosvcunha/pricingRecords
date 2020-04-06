@@ -117,6 +117,7 @@ def sendPlotsByEmail(subReport):
 
 
 def main():
+    createSub()
     checkSubs()
     return
 

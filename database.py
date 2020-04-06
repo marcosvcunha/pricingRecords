@@ -71,6 +71,8 @@ def tableExists(tableName):
     else:
         return False
 
+
+## Salva os produtos no db
 def saveSqlite(data):
     con = lite.connect("priceMonitor.db")
     products = data["products"]
