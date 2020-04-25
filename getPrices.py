@@ -2,10 +2,9 @@ import bs4
 from urllib.request import urlopen as uReq
 from urllib.request import Request
 from bs4 import BeautifulSoup as soup
+import re
 import json
 from datetime import datetime
-from utils import *
-import re
 
 def increasePageKabum(link):
     pos = link.find("pagina=")
@@ -44,44 +43,28 @@ def getPage(url):
 
 def getPricesKabum(my_url):
     products = []
-
     try:
         page_soup = getPage(my_url)
     except:
         print("Erro ao baixar a página.")
         return products
 
-    cards = page_soup.findAll("div", {"style":"position:relative;"})
+    data = re.findall('const listagemDados =(.+?);\n', str(page_soup), re.S)
+    items = json.loads(data[0])
     avaibleProd = True
-    while((len(cards) > 0) and avaibleProd):
+    while((len(items) > 0) and avaibleProd):
         ## essa flag fica em falso até que um produto disponivel seja encontrado na pagina
         ## Se nenhum produto disponivel for encontrado em uma página, as proximas paginas não precisam ser verificadas.
         avaibleProd = False
-        for i in range(len(cards)):
+        for item in items:
             try:
-                ## Vê se o item está a venda pelo marketplace
-                if(len(cards[i].findAll("span", {"class":"mktplace_chamada"})) == 0):
-                    ## Ver se o produto está disponivel
-                    comprarImg = cards[i].findAll("div", {"style":"padding:0 0 5px 0;"})[0].a.img['src']
-                    if(not ("comprar_off" in comprarImg)):
-                        avaibleProd = True ## um produto disponivel foi encontrado
-                        link = cards[i].findAll("div",{"class":"listagem-titulo_descr"})[0].h2.a["href"]
-                        name = cards[i].section.div.div.a.img["title"]
-                        price12xStr = cards[i].findAll("div", {"class":"listagem-precoavista"})[0].text[3:].replace(".", "")
-                        price12x = int(price12xStr[:(len(price12xStr) - 3)])
-                        priceStr = cards[i].findAll("div", {"class":"listagem-preco"})
-
-                        ## Caso nao haja desconto na compra a vista: price = price12x
-                        if(len(priceStr) > 0):
-                            priceStr = priceStr[0].text[3:].replace(".", "")
-                            price = int(priceStr[:(len(priceStr) - 3)])
-                        else:
-                            price = price12x
-
-                        prodDict = {"name":name, "price":price, "price12x":price12x, "link":link}
-                        products.append(prodDict)
-            except:
-                print("Erro no item: " + str(i))
+                if(not item['is_marketplace'] and item['disponibilidade']):
+                    avaibleProd = True
+                    prodDict = {'name': item['nome'], 'price': item['preco_desconto'], 'price12x': item['preco'], 
+                    'link': 'kabum.com.br' + item['link_descricao']}
+                    products.append(prodDict)
+            except Exception as e:
+                print("Erro: " + str(e))
         ## Se nenhum produto disponivel for encontrado nesta página, as proximas nao precisam ser verificadas.
         if(avaibleProd):
             my_url = increasePageKabum(my_url)
@@ -90,7 +73,8 @@ def getPricesKabum(my_url):
             except:
                 print("Erro ao baixar a página.")
                 return products
-            cards = page_soup.findAll("div", {"style":"position:relative;"})
+            data = re.findall('const listagemDados =(.+?);\n', str(page_soup), re.S)
+            items = json.loads(data[0])
     return products
 
 def getPricesPichau(my_url):
@@ -204,3 +188,10 @@ def getProductsFromWeb(urls):
                         pass
                 products += items
     return {"products": products, "readTime":now}
+
+def main():
+    prods = getPricesKabum('https://www.kabum.com.br/hardware/placa-de-video-vga?string=&pagina=1&ordem=5&limite=100')
+    print(len(prods))
+
+if __name__ == "__main__":
+    main()

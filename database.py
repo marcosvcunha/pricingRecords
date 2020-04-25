@@ -223,8 +223,6 @@ def insertSub(username, email, prodNames, prodTypes, period):
     con = lite.connect("priceMonitor.db")
     with con:
         cur = con.cursor()
-        cur.execute("""CREATE TABLE IF NOT EXISTS reportSubs(id INTEGER PRIMARY KEY, username TEXT, email TEXT, 
-            prodNames TEXT, prodTypes TEXT, period INT, lastReport timestamp);""")
         cur.execute("""INSERT INTO reportSubs(username, email, prodNames, prodTypes, period, lastReport) 
             VALUES(?,?,?,?,?,?)""", (username, email, repr(prodNames), repr(prodTypes), period, float(0)))
 
