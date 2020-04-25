@@ -1,6 +1,5 @@
 import getPrices
 from getPrices import getProductsFromWeb as getProds
-from utils import *
 from datetime import datetime
 from database import *
 from subscriptions import checkSubs
