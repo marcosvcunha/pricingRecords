@@ -72,16 +72,16 @@ def checkSubs():
                 threeProds = db.getCheapestsProductEachDay(sub['prodNames'][i], prodType=sub['prodTypes'][i], 
                     startTime=(now - secondsInADay*30), endTime=now, countPerDay=3)
                 threeProdsAvg = _getAvarageForEachDay(threeProds)
-                plotProducts(singleProd, threeProdsAvg, sub['prodNames'][i].upper())
-            sendPlotsByEmail(sub)
-            deletePlots(sub['prodNames'])
+                _plotProducts(singleProd, threeProdsAvg, sub['prodNames'][i].upper())
+            _sendPlotsByEmail(sub)
+            _deletePlots(sub['prodNames'])
             db.updateReportSub(sub['username'], datetime.now().timestamp())
 
-def deletePlots(names):
+def _deletePlots(names):
     for name in names:
         system("rm " + name.replace(" ", "").upper() + ".png")
 
-def plotProducts(singleProd, threeProdsAvg, title):
+def _plotProducts(singleProd, threeProdsAvg, title):
     dateTimes = []
     for value in singleProd['times']:
         dateTimes.append(datetime.fromtimestamp(value))
@@ -106,7 +106,7 @@ def plotProducts(singleProd, threeProdsAvg, title):
     plt.clf()
 
 
-def sendPlotsByEmail(subReport):
+def _sendPlotsByEmail(subReport):
     fileNames = []
     for prodName in subReport['prodNames']:
         fileNames.append(prodName.replace(" ", "") + '.png')

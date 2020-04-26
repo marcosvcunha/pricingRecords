@@ -45,8 +45,8 @@ def getPricesKabum(my_url):
     products = []
     try:
         page_soup = getPage(my_url)
-    except:
-        print("Erro ao baixar a página.")
+    except Exception as e:
+        print("Erro ao baixar a página: " + str(e))
         return products
 
     data = re.findall('const listagemDados =(.+?);\n', str(page_soup), re.S)
@@ -70,8 +70,8 @@ def getPricesKabum(my_url):
             my_url = increasePageKabum(my_url)
             try:
                 page_soup = getPage(my_url)
-            except:
-                print("Erro ao baixar a página.")
+            except Exception as e:
+                print("Erro ao baixar a página: " + str(e))
                 return products
             data = re.findall('const listagemDados =(.+?);\n', str(page_soup), re.S)
             items = json.loads(data[0])
@@ -81,8 +81,8 @@ def getPricesPichau(my_url):
     products = []
     try:
         page_soup = getPage(my_url)
-    except:
-        print("Erro ao baixar a página.")
+    except Exception as e:
+        print("Erro ao baixar a página: " + str(e))
         return products
     
     cards = page_soup.findAll("li", {"class":"item product product-item"})
@@ -114,8 +114,8 @@ def getPricesPichau(my_url):
             my_url = increasePagePichau(my_url)
             try:
                 page_soup = getPage(my_url)
-            except:
-                print("Erro ao baixar a página.")
+            except Exception as e:
+                print("Erro ao baixar a página: " + str(e))
                 return products
             cards = page_soup.findAll("li", {"class":"item product product-item"})
         else:
@@ -124,11 +124,10 @@ def getPricesPichau(my_url):
 
 def getPricesTerabyte(my_url):
     products = []
-
     try:
         page_soup = getPage(my_url)
-    except:
-        print("Erro ao baixar a página.")
+    except Exception as e:
+        print("Erro ao baixar a página: " + str(e))
         return products
 
     cards = page_soup.findAll("div",{"class":"pbox col-xs-12 col-sm-6 col-md-3"})
@@ -177,6 +176,7 @@ def getProductsFromWeb(urls):
         print("Pegando os produtos de: " + store)
         for prodType in urls[store]:
             for link in urls[store][prodType]:
+                print('Pegando {} de {}.'.format(str(store), str(prodType)))
                 items = getProductsFromPage(link, store)
                 for item in items:
                     try:
