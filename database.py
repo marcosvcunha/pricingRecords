@@ -16,8 +16,8 @@ def saveSqlite(data):
         productsList = []
         for item in products:
             productsList.append((item['name'], item['price'], item['price12x'], item['link'], item['time'],
-                item['store'], item["prodType"]))
-        cur.executemany("INSERT INTO products(name, price, price12x, link, time, store, prodType) VALUES(?,?,?,?,?,?,?)", productsList)
+                item['store'], item["prodType"], item['img_url']))
+        cur.executemany("INSERT INTO products(name, price, price12x, link, time, store, prodType, img_url) VALUES(?,?,?,?,?,?,?,?)", productsList)
         ## Salva o momento da leitura na tabela reads:
         cur.executescript(""" 
             CREATE TABLE IF NOT EXISTS reads(id INTEGER PRIMARY KEY, time TIMESTAMP);

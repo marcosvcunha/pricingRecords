@@ -61,7 +61,7 @@ def getPricesKabum(my_url):
                 if(not item['is_marketplace'] and item['disponibilidade']):
                     avaibleProd = True
                     prodDict = {'name': item['nome'], 'price': item['preco_desconto'], 'price12x': item['preco'], 
-                    'link': 'kabum.com.br' + item['link_descricao']}
+                    'link': 'kabum.com.br' + item['link_descricao'], 'img_url':item['img']}
                     products.append(prodDict)
             except Exception as e:
                 print("Erro: " + str(e))
@@ -105,7 +105,8 @@ def getPricesPichau(my_url):
                     priceStr = cards[i].findAll("span",{"class":"price-boleto"})[0].text.strip()
                     priceStr = priceStr[10:(priceStr.find("no boleto") - 4)].replace(".", "")
                     price = int(priceStr)
-                    prodDict = {"name":name, "price":price, "price12x":price12x, "link":link}
+                    img_url = cards[i].findAll('img', {'class':'product-image-photo'})[0]['src']
+                    prodDict = {"name":name, "price":price, "price12x":price12x, "link":link, 'img_url':img_url}
                     products.append(prodDict)
             except:
                 print("Erro no item: " + str(i))
@@ -146,10 +147,11 @@ def getPricesTerabyte(my_url):
                 priceStr = cards[i].findAll("div",{"class":"prod-new-price"})[0].text
                 priceStr = re.sub('[^0-9]','', priceStr)
                 price = int(priceStr[:(len(priceStr) - 2)])
-                prodDict = {"name":name, "price":price, "price12x":price12x, "link":link}
+                img_url = cards[i].findAll('a',{'class':'commerce_columns_item_image'})[0].img['src']
+                prodDict = {"name":name, "price":price, "price12x":price12x, "link":link, 'img_url': img_url}
                 products.append(prodDict)
-        except:
-            print("Erro no item: " + str(i))
+        except Exception as e:
+            print("Erro no item {}:".format(i) +  str(e))
     return products
 
 
@@ -176,7 +178,7 @@ def getProductsFromWeb(urls):
         print("Pegando os produtos de: " + store)
         for prodType in urls[store]:
             for link in urls[store][prodType]:
-                print('Pegando {} de {}.'.format(str(store), str(prodType)))
+                print('Pegando {} de {}.'.format(str(prodType), str(store)))
                 items = getProductsFromPage(link, store)
                 for item in items:
                     try:
