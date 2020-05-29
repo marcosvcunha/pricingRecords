@@ -34,3 +34,12 @@ CREATE TABLE IF NOT EXISTS urls(
     store TEXT, 
     prodType TEXT, 
     urls TEXT);
+
+DROP TABLE errors;
+
+CREATE TABLE IF NOT EXISTS errors(
+    func TEXT,
+    file TEXT,
+    error TEXT,
+    otherInfo TEXT,
+    date TIMESTAMP);
