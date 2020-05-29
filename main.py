@@ -46,6 +46,7 @@ def readProducts():
 def makeReports():
     while 1:
         checkSubs()
+        print('Make Reports Indo Dormir')
         time.sleep(60*60)
 
 def main():

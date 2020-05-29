@@ -192,7 +192,7 @@ def getProductsFromWeb(urls):
     return {"products": products, "readTime":now}
 
 def main():
-    prods = getPricesKabum('https://www.kabum.com.br/hardware/placa-de-video-vga?string=&pagina=1&ordem=5&limite=100')
+    prods = getPricesKabum('https://www.kabum.com.br/hardware/placas-mae?ordem=5&limite=100&pagina=1&string=')
     print(len(prods))
 
 if __name__ == "__main__":

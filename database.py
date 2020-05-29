@@ -9,10 +9,10 @@ def saveSqlite(data):
     products = data["products"]
     with con:
         cur = con.cursor()
-        cur.executescript(""" 
-            CREATE TABLE IF NOT EXISTS products(name TEXT, price INT, price12x INT, link TEXT, time TIMESTAMP, 
-            store TEXT, prodType TEXT, model TEXT);
-        """)
+        # cur.executescript(""" 
+        #     CREATE TABLE IF NOT EXISTS products(name TEXT, price INT, price12x INT, link TEXT, time TIMESTAMP, 
+        #     store TEXT, prodType TEXT, model TEXT);
+        # """)
         productsList = []
         for item in products:
             productsList.append((item['name'], item['price'], item['price12x'], item['link'], item['time'],
@@ -31,9 +31,9 @@ def getLastRead():
     with con:
         con.row_factory = lite.Row
         cur = con.cursor()
-        cur.executescript(""" 
-            CREATE TABLE IF NOT EXISTS reads(id INTEGER PRIMARY KEY, time TIMESTAMP);
-        """)
+        # cur.executescript(""" 
+        #     CREATE TABLE IF NOT EXISTS reads(id INTEGER PRIMARY KEY, time TIMESTAMP);
+        # """)
         cur.execute("SELECT time FROM reads ORDER BY id DESC LIMIT 1;")
         rows = cur.fetchall()
     if(len(rows) > 0):
@@ -176,3 +176,10 @@ def updateReportSub(username, lastReport):
         cur = con.cursor()
         cur.execute("UPDATE reportSubs SET lastReport = {} WHERE username = '{}';".format(lastReport, username))
     return
+
+def registerError(func, file, error, otherInfo=''):
+    con = lite.connect('priceMonitor.db')
+
+    with con:
+        cur = con.cursor()
+        cur.execute("INSERT INTO errors VALUES(?, ?, ?, ?, ?);", (func, file, error, otherInfo, datetime.now().timestamp()))
