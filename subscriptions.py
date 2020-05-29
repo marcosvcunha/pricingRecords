@@ -79,6 +79,7 @@ def checkSubs():
                 _deletePlots(sub['prodNames'])
                 db.updateReportSub(sub['username'], datetime.now().timestamp())
         except Exception as e:
+            db.registerError('checkSubs', 'subscriptions.py', str(e), otherInfo='sub: ' + str(sub))
             pass
 
 def _deletePlots(names):

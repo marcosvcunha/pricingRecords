@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup as soup
 import re
 import json
 from datetime import datetime
+import database as db
 
 def increasePageKabum(link):
     pos = link.find("pagina=")
@@ -47,6 +48,7 @@ def getPricesKabum(my_url):
         page_soup = getPage(my_url)
     except Exception as e:
         print("Erro ao baixar a página: " + str(e))
+        db.registerError('getPricesKabum', 'getPrices.py', str(e), otherInfo='erro em get Page url: ' + my_url)
         return products
 
     data = re.findall('const listagemDados =(.+?);\n', str(page_soup), re.S)
@@ -65,6 +67,7 @@ def getPricesKabum(my_url):
                     products.append(prodDict)
             except Exception as e:
                 print("Erro: " + str(e))
+                db.registerError('getPricesKabum', 'getPrices.py', str(e), 'url: ' + my_url)
         ## Se nenhum produto disponivel for encontrado nesta página, as proximas nao precisam ser verificadas.
         if(avaibleProd):
             my_url = increasePageKabum(my_url)
@@ -72,6 +75,7 @@ def getPricesKabum(my_url):
                 page_soup = getPage(my_url)
             except Exception as e:
                 print("Erro ao baixar a página: " + str(e))
+                db.registerError('getPricesKabum', 'getPrices.py', str(e), 'url: ' + my_url)
                 return products
             data = re.findall('const listagemDados =(.+?);\n', str(page_soup), re.S)
             items = json.loads(data[0])
@@ -83,6 +87,7 @@ def getPricesPichau(my_url):
         page_soup = getPage(my_url)
     except Exception as e:
         print("Erro ao baixar a página: " + str(e))
+        db.registerError('getPricesPichau', 'getPrices.py', str(e), otherInfo='erro em get Page url: ' + my_url)
         return products
     
     cards = page_soup.findAll("li", {"class":"item product product-item"})
@@ -108,8 +113,9 @@ def getPricesPichau(my_url):
                     img_url = cards[i].findAll('img', {'class':'product-image-photo'})[0]['src']
                     prodDict = {"name":name, "price":price, "price12x":price12x, "link":link, 'img_url':img_url}
                     products.append(prodDict)
-            except:
+            except Exception as e:
                 print("Erro no item: " + str(i))
+                db.registerError('getPricesPichau', 'getPrices.py', str(e), otherInfo='erro em url: ' + my_url)
         ## Se nenhum produto disponivel for encontrado nesta página, as proximas nao precisam ser verificadas.
         if(avaibleProd and (len(cards) == 48)):
             my_url = increasePagePichau(my_url)
@@ -117,6 +123,7 @@ def getPricesPichau(my_url):
                 page_soup = getPage(my_url)
             except Exception as e:
                 print("Erro ao baixar a página: " + str(e))
+                db.registerError('getPricesPichau', 'getPrices.py', str(e), otherInfo='erro em url: ' + my_url)
                 return products
             cards = page_soup.findAll("li", {"class":"item product product-item"})
         else:
@@ -129,6 +136,7 @@ def getPricesTerabyte(my_url):
         page_soup = getPage(my_url)
     except Exception as e:
         print("Erro ao baixar a página: " + str(e))
+        db.registerError('getPricesTerabyte', 'getPrices.py', str(e), otherInfo='erro em get Prices url: ' + my_url)
         return products
 
     cards = page_soup.findAll("div",{"class":"pbox col-xs-12 col-sm-6 col-md-3"})
@@ -152,6 +160,7 @@ def getPricesTerabyte(my_url):
                 products.append(prodDict)
         except Exception as e:
             print("Erro no item {}:".format(i) +  str(e))
+            db.registerError('getPricesTerabyte', 'getPrices.py', str(e), otherInfo='erro em url: ' + my_url)
     return products
 
 
@@ -185,9 +194,11 @@ def getProductsFromWeb(urls):
                         item["store"] = store
                         item["prodType"] = prodType
                         item["time"] = now
-                    except:
+                    except Exception as e:
                         print("Pequeno erro insignificante.")
-                        pass
+                        db.registerError('getProductsFromWeb', 'getPrices.py', str(e), 
+                            otherInfo= 'Erro em store: {}, prodType: {}, link: {}, item: {}'.format(str(store),
+                                str(prodType), str(link), str(item)))
                 products += items
     return {"products": products, "readTime":now}
 
