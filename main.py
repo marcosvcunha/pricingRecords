@@ -1,10 +1,11 @@
 import getPrices
 from getPrices import getProductsFromWeb as getProds
 from datetime import datetime
-from database import *
+import database as db
 from subscriptions import checkSubs
 import time
 from threading import Thread
+import sys
 
 test_urls = {
     "kabum":{
@@ -13,22 +14,25 @@ test_urls = {
     }
 }
 
-def readProducts():
+def readProducts(test=False):
     while 1:
-        lastRead = getLastRead()
+        lastRead = db.getLastRead()
         now = datetime.now().timestamp()
         deltaInHours = int((now - lastRead)/(3600))
 
         ## Só faz a leitura se se passaram pelo menos 8 horas desde a ultima leitura.
         if(deltaInHours >= 20):
-            urls = getUrlsAsDict()
+            if(not test):
+                urls = db.getUrlsAsDict()
+            else:
+                urls = test_urls
             startTime = datetime.now().timestamp()
             data = getProds(urls)
             endTime = datetime.now().timestamp()
             getProdsTime = endTime - startTime
 
             startTime = datetime.now().timestamp()
-            saveSqlite(data)
+            db.storeProducts(data)
             endTime = datetime.now().timestamp()
             saveSqliteTime = endTime - startTime
 
@@ -49,13 +53,25 @@ def makeReports():
         print('Make Reports Indo Dormir')
         time.sleep(60*60)
 
+def readTest():
+    readProducts(test=True)
+
 def main():
-    getProductsThread = Thread(target=readProducts)
-    getProductsThread.start()
-    makeReportsThread = Thread(target=makeReports)
-    makeReportsThread.start()
-    getProductsThread.join()
-    makeReportsThread.join()
+    print('Número de argumentos: ' + str(len(sys.argv)))
+    if(len(sys.argv) == 100):
+        getProductsThread = Thread(target=readProducts)
+        getProductsThread.start()
+        makeReportsThread = Thread(target=makeReports)
+        makeReportsThread.start()
+        getProductsThread.join()
+        makeReportsThread.join()
+    elif(len(sys.argv) == 2):
+        if(sys.argv[1] == 'readTest'):
+            readTest()
+        else:
+            print('Argumento incorreto!')
+    else:
+        print('Número incorreto de argumentos')
 
 if __name__ == '__main__':
     main()

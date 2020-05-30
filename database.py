@@ -4,25 +4,22 @@ from datetime import datetime
 
 
 ## Salva os produtos no db
-def saveSqlite(data):
+def storeProducts(data):
     con = lite.connect("priceMonitor.db")
-    products = data["products"]
+    products = data
+    now = datetime.now().timestamp()
     with con:
         cur = con.cursor()
-        # cur.executescript(""" 
-        #     CREATE TABLE IF NOT EXISTS products(name TEXT, price INT, price12x INT, link TEXT, time TIMESTAMP, 
-        #     store TEXT, prodType TEXT, model TEXT);
-        # """)
+        ## Salva o momento da leitura na tabela reads:
+        cur.execute("INSERT INTO reads(time) VALUES({})".format(now))
+        timeIndex = cur.lastrowid
+        print('Time Index: ' + str(timeIndex))
         productsList = []
         for item in products:
-            productsList.append((item['name'], item['price'], item['price12x'], item['link'], item['time'],
-                item['store'], item["prodType"], item['img_url']))
-        cur.executemany("INSERT INTO products(name, price, price12x, link, time, store, prodType, img_url) VALUES(?,?,?,?,?,?,?,?)", productsList)
-        ## Salva o momento da leitura na tabela reads:
-        cur.executescript(""" 
-            CREATE TABLE IF NOT EXISTS reads(id INTEGER PRIMARY KEY, time TIMESTAMP);
-        """)
-        cur.execute("INSERT INTO reads(time) VALUES({})".format(data["readTime"]))
+            productsList.append((item['name'], item['price'], item['price12x'], item['link'], now,
+                timeIndex, item['store'], item["prodType"], item['img_url']))
+        cur.executemany("""INSERT INTO products(name, price, price12x, link, time, timeKey, store, prodType, img_url) 
+            VALUES(?,?,?,?,?,?,?,?,?)""", productsList)
 
 
 ## Retorna o timestamp da ultima leitura de produtos feita

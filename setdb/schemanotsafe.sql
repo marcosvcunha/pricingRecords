@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS products(
     price12x INT, 
     link TEXT, 
     img_link TEXT, 
-    time TIMESTAMP, 
+    time TIMESTAMP,
+    timeKey INT,
     store TEXT, 
     prodType TEXT, 
     model TEXT);

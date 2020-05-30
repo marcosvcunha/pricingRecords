@@ -179,7 +179,6 @@ def getProductsFromPage(url, store):
     Retorna todos o produtos como uma lista de dicionarios.
 """
 def getProductsFromWeb(urls):
-    now = datetime.now().timestamp()
     ## Carregando os classificadores
     print("Começando a pegar os produtos.")
     products = []
@@ -193,14 +192,13 @@ def getProductsFromWeb(urls):
                     try:
                         item["store"] = store
                         item["prodType"] = prodType
-                        item["time"] = now
                     except Exception as e:
                         print("Pequeno erro insignificante.")
                         db.registerError('getProductsFromWeb', 'getPrices.py', str(e), 
                             otherInfo= 'Erro em store: {}, prodType: {}, link: {}, item: {}'.format(str(store),
                                 str(prodType), str(link), str(item)))
                 products += items
-    return {"products": products, "readTime":now}
+    return products
 
 def main():
     prods = getPricesKabum('https://www.kabum.com.br/hardware/placas-mae?ordem=5&limite=100&pagina=1&string=')
