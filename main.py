@@ -58,7 +58,7 @@ def readTest():
 
 def main():
     print('Número de argumentos: ' + str(len(sys.argv)))
-    if(len(sys.argv) == 100):
+    if(len(sys.argv) == 1):
         getProductsThread = Thread(target=readProducts)
         getProductsThread.start()
         makeReportsThread = Thread(target=makeReports)
