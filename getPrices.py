@@ -51,7 +51,8 @@ def getPricesKabum(my_url):
         db.registerError('getPricesKabum', 'getPrices.py', str(e), otherInfo='erro em get Page url: ' + my_url)
         return products
 
-    data = re.findall('const listagemDados =(.+?);\n', str(page_soup), re.S)
+    data = re.findall('const listagemDados =(.+?)]\n', str(page_soup), re.S)
+    data[0] += ']'
     items = json.loads(data[0])
     avaibleProd = True
     while((len(items) > 0) and avaibleProd):
@@ -77,7 +78,8 @@ def getPricesKabum(my_url):
                 print("Erro ao baixar a página: " + str(e))
                 db.registerError('getPricesKabum', 'getPrices.py', str(e), 'url: ' + my_url)
                 return products
-            data = re.findall('const listagemDados =(.+?);\n', str(page_soup), re.S)
+            data = re.findall('const listagemDados =(.+?)]\n', str(page_soup), re.S)
+            data[0] += ']'
             items = json.loads(data[0])
     return products
 

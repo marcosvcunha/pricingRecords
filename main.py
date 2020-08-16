@@ -20,7 +20,7 @@ def readProducts(test=False):
         now = datetime.now().timestamp()
         deltaInHours = int((now - lastRead)/(3600))
 
-        ## Só faz a leitura se se passaram pelo menos 8 horas desde a ultima leitura.
+        ## Só faz a leitura se se passaram pelo menos 20 horas desde a ultima leitura.
         if(deltaInHours >= 20):
             if(not test):
                 urls = db.getUrlsAsDict()
