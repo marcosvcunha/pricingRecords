@@ -11,6 +11,14 @@ test_urls = {
     "kabum":{
         "vga":['https://www.kabum.com.br/hardware/placa-de-video-vga?string=&pagina=1&ordem=5&limite=100'],
         "ram":['https://www.kabum.com.br/hardware/memoria-ram?ordem=5&limite=100&pagina=1&string=']
+    },
+    "pichau":{
+        "vga":['https://www.pichau.com.br/hardware/placa-de-video?p=1&product_list_limit=48'],
+        "ram":['https://www.pichau.com.br/hardware/memorias?p=1&product_list_limit=48']
+    },
+    "terabyte":{
+        "vga":['https://www.terabyteshop.com.br/hardware/placas-de-video/nvidia-geforce'],
+        "ram":['https://www.terabyteshop.com.br/hardware/memorias/ddr4']
     }
 }
 
@@ -21,7 +29,7 @@ def readProducts(test=False):
         deltaInHours = int((now - lastRead)/(3600))
 
         ## Só faz a leitura se se passaram pelo menos 20 horas desde a ultima leitura.
-        if(deltaInHours >= 20):
+        if(deltaInHours >= 20 or test):
             if(not test):
                 urls = db.getUrlsAsDict()
             else:

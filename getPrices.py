@@ -1,6 +1,7 @@
 import bs4
 from urllib.request import urlopen as uReq
 from urllib.request import Request
+import requests
 from bs4 import BeautifulSoup as soup
 import re
 import json
@@ -32,11 +33,14 @@ def createProductDict(classifiers):
     return newDict
 
 def getPage(url):
-    hdr = {'User-Agent':'Mozilla/5.0'}
-    req = Request(url,headers=hdr)
-    uClient = uReq(req, timeout=10)
-    page_html = uClient.read()
-    uClient.close()
+    # hdr = {'User-Agent': 'Mozilla/5.0'}
+    # req = Request(url,headers=hdr)
+    # uClient = uReq(req, timeout=10)
+    # page_html = uClient.read()
+    # uClient.close()
+    r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
+    r.close()
+    page_html = r.text
     page_soup = soup(page_html, "html.parser")
 
     ## Pega todas os cards
